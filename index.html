@@ -142,6 +142,53 @@
     .picker-done { flex:2; border:0; background:var(--red); color:#fff; }
     body.picker-open { overflow:hidden; }
     @media(min-width:650px) { .overlay { align-items:center; } .picker { border-radius:23px; } }
+
+    /* Compacte iPhone-weergave: invoer + volledig resultaat op één scherm.
+       Houd de wielkiezer en de grotere desktopweergave ongemoeid. */
+    @media (max-width: 600px) {
+      body { line-height: 1.3; }
+      .topline { height: 4px; }
+      .wrap { width: calc(100% - 24px); }
+      .brand { padding: 11px 1px 9px; }
+      .miele { font-size: 25px; }
+      .brand-right { font-size: 9px; letter-spacing: .09em; }
+      .hero { padding: 0 2px 12px; }
+      .eyebrow { font-size: 9px; margin: 0 0 4px; }
+      h1 { font-size: 32px; line-height: 1.06; }
+      h1 .heart { vertical-align: 5px; }
+      .quote { font-size: 12px; line-height: 1.28; min-height: 0; margin: 6px 0 0; }
+      .quote::before, .quote::after { font-size: 14px; }
+      .card { padding: 14px 15px 15px; border-radius: 17px; }
+      .step-heading { gap: 9px; }
+      .step-no { width: 27px; height: 27px; border-radius: 8px; font-size: 11px; margin-top: 0; }
+      h2 { font-size: 15px; line-height: 1.26; }
+      .helper { margin: 5px 0 9px 36px; font-size: 11px; line-height: 1.32; }
+      .duration, .finish { margin-left: 36px; }
+      .input-label { font-size: 9px; line-height: 1.25; margin: 0 0 4px 2px; letter-spacing: .045em; }
+      .duration .inputbox, .finish .inputbox { height: 49px; border-radius: 10px; }
+      .time-trigger { font-size: 25px; padding: 0 12px; }
+      .time-trigger svg { width: 18px; height: 18px; }
+      .rule { margin: 14px 0 13px; }
+      .finish-day { font-size: 11px; line-height: 1.25; margin: 5px 0 0 2px; }
+      .result { border-radius: 17px; margin-top: 10px; padding: 13px 16px 14px; }
+      .result-kicker { font-size: 10px; margin-bottom: 4px; letter-spacing: .10em; }
+      .answer-text { font-size: 14px; line-height: 1.2; }
+      .answer-number { font-size: 49px; line-height: 1.04; margin-top: 4px; }
+      .answer-number small { font-size: 18px; margin-left: 5px; }
+      .result[data-state="now"] .answer-number { font-size: 31px; line-height: 1.08; }
+      .answer-sub { font-size: 11px; line-height: 1.35; margin-top: 7px; }
+      .answer-warning-head { font-size: 20px; margin: 5px 0; }
+      .answer-warning-body { font-size: 12px; line-height: 1.4; }
+      .steps { margin-top: 18px; }
+    }
+    @media (max-width: 360px) {
+      .brand-right { font-size: 8px; }
+      .card { padding: 12px 12px 13px; }
+      h2 { font-size: 14px; }
+      .duration, .finish { margin-left: 36px; }
+      .helper { margin-left: 36px; }
+      .result { padding: 12px 14px; }
+    }
   </style>
 </head>
 <body>
@@ -162,7 +209,7 @@
           <span class="step-no" aria-hidden="true">01</span>
           <h2>Hoelang duurt het programma dat je wil starten?</h2>
         </div>
-        <p class="helper">Neem de duur over van het Miele-display, bijvoorbeeld 01:30 voor 1 uur en 30 minuten.</p>
+        <p class="helper">Neem de duur over van de Miele, bijvoorbeeld 01:30.</p>
         <div class="duration">
           <label class="input-label" for="programDuration">Programmaduur (uren : minuten)</label>
           <div class="inputbox">
@@ -174,7 +221,7 @@
           <span class="step-no" aria-hidden="true">02</span>
           <h2>Wanneer wil je dat de was klaar is?</h2>
         </div>
-        <p class="helper">We stellen automatisch de vroegst mogelijke eindtijd voor. Scroll naar een ander uur als je dat liever wil.</p>
+        <p class="helper">We starten bij nu + programmaduur. Scroll naar jouw gewenste uur.</p>
         <div class="finish">
           <label class="input-label" for="finishTime">De was moet klaar zijn om</label>
           <div class="inputbox">
@@ -270,7 +317,7 @@
     const strong=document.createElement('strong');
     strong.textContent=`Klaar ${dateLabel(selectedEnd,current)}`;
     n.appendChild(strong);
-    n.appendChild(document.createTextNode(userChangedEnd ? ` · ${friendly(selectedEnd)}` : ` · voorstel ${clock(selectedEnd)} (nu + programmaduur)`));
+    n.appendChild(document.createTextNode(userChangedEnd ? ` · ${friendly(selectedEnd)}` : ' · automatisch voorgesteld'));
   }
   function warning(title,info) {
     $('result').dataset.state='warning';
@@ -300,7 +347,7 @@
       warning('Deze eindtijd lukt niet meer', `Als je meteen start, is de was vermoedelijk klaar om ${clock(earliestFinish(current,programMinutes))}. Kies een later tijdstip.`);return;
     }
     if(diffMinutes < 15) {
-      answer('Je hoeft geen startuitstel te kiezen','Start meteen','',`De was is dan vermoedelijk rond ${clock(new Date(current.getTime()+programMinutes*60000))} klaar. Scroll naar een later tijdstip als je later wil starten.`);
+      answer('Je hoeft geen startuitstel te kiezen','Start meteen','',`De was is rond ${clock(new Date(current.getTime()+programMinutes*60000))} klaar. Kies een later uur om te wachten.`);
       $('result').dataset.state='now'; return;
     }
     if(diffMinutes > 1440) {
